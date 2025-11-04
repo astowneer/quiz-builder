@@ -20,7 +20,17 @@ export class QuizService {
       },
       include: { questions: { include: { options: true } } },
     });
-    
+
     return quiz;
+  }
+
+  async getAllQuizzes() {
+    return this.prisma.quiz.findMany({
+      select: {
+        id: true,
+        title: true,
+        questions: { select: { id: true } },
+      },
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dtos/quiz.dto';
 
@@ -9,5 +9,15 @@ export class QuizController {
   @Post()
   async create(@Body() request: CreateQuizDto) {
     return this.quizService.createQuiz(request);
+  }
+
+  @Get()
+  async findAll() {
+    const quizzes = await this.quizService.getAllQuizzes();
+    return quizzes.map((q) => ({
+      id: q.id,
+      title: q.title,
+      questionCount: q.questions.length,
+    }));
   }
 }
