@@ -33,4 +33,11 @@ export class QuizService {
       },
     });
   }
+
+  async getQuizById(id: number) {
+    return this.prisma.quiz.findUnique({
+      where: { id },
+      include: { questions: { include: { options: true } } },
+    });
+  }
 }

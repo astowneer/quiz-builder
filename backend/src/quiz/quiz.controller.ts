@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dtos/quiz.dto';
 
@@ -19,5 +26,10 @@ export class QuizController {
       title: q.title,
       questionCount: q.questions.length,
     }));
+  }
+
+  @Get(':id')
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.quizService.getQuizById(id);
   }
 }
