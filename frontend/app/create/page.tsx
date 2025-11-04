@@ -39,6 +39,38 @@ export default function CreateQuizPage() {
     );
   }
 
+  function removeOption(qIndex: number, optIndex: number) {
+    const q = questions[qIndex];
+    if (!q.options) return;
+    const newOptions = q.options.filter((_, i) => i !== optIndex);
+    updateQuestion(qIndex, "options", newOptions);
+  }
+
+  function addOption(index: number) {
+    const q = questions[index];
+    if (q.type !== "checkbox") return;
+    const newOptions = q.options
+      ? [...q.options, { text: "", isCorrect: false }]
+      : [{ text: "", isCorrect: false }];
+    updateQuestion(index, "options", newOptions);
+  }
+
+  function updateOption(qIndex: number, optIndex: number, value: string) {
+    const q = questions[qIndex];
+    if (!q.options) return;
+    const newOptions = [...q.options];
+    newOptions[optIndex].text = value;
+    updateQuestion(qIndex, "options", newOptions);
+  }
+
+  function toggleCorrectOption(qIndex: number, optIndex: number) {
+    const q = questions[qIndex];
+    if (!q.options) return;
+    const newOptions = [...q.options];
+    newOptions[optIndex].isCorrect = !newOptions[optIndex].isCorrect;
+    updateQuestion(qIndex, "options", newOptions);
+  }
+
   function removeQuestion(index: number) {
     setQuestions((prev) => prev.filter((_, i) => i !== index));
   }
@@ -129,6 +161,57 @@ export default function CreateQuizPage() {
                     />
                     False
                   </label>
+                </div>
+              )}
+              {q.type === "input" && (
+                <input
+                  type="text"
+                  className="w-full p-2 rounded-md bg-transparent border-b-4 border-red-900 text-white focus:border-white outline-none"
+                  placeholder="Answer"
+                  value={q.answer || ""}
+                  onChange={(e) =>
+                    updateQuestion(index, "answer", e.target.value)
+                  }
+                />
+              )}
+
+              {q.type === "checkbox" && (
+                <div className="space-y-2">
+                  {q.options?.map((opt, optIndex) => (
+                    <div key={optIndex} className="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        className="p-2 rounded-md bg-transparent border-b-4 border-red-900 text-white focus:border-white outline-none flex-1"
+                        placeholder="Option text"
+                        value={opt.text}
+                        onChange={(e) =>
+                          updateOption(index, optIndex, e.target.value)
+                        }
+                      />
+                      <label className="flex items-center gap-1 text-white/70">
+                        <input
+                          type="checkbox"
+                          checked={opt.isCorrect}
+                          onChange={() => toggleCorrectOption(index, optIndex)}
+                        />
+                        Correct
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => removeOption(index, optIndex)}
+                        className="text-red-900 hover:text-white"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addOption(index)}
+                    className="text-white hover:text-white/70"
+                  >
+                    + Add Option
+                  </button>
                 </div>
               )}
             </div>
