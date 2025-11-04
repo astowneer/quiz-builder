@@ -1,3 +1,9 @@
+interface Quiz {
+  id: number;
+  title: string;
+  questions: QuizQuestion[];
+}
+
 type QuestionType = "boolean" | "input" | "checkbox";
 
 interface CheckboxOption {
@@ -12,4 +18,4 @@ interface QuizQuestion {
   answer?: string;
 }
 
-export { type QuestionType, type CheckboxOption, type QuizQuestion };
+export { type QuestionType, type CheckboxOption, type QuizQuestion, type Quiz };
