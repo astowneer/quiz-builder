@@ -99,10 +99,38 @@ export default function CreateQuizPage() {
                   }
                 >
                   <option value="input">Input</option>
-                  <option value="boolean">Boolean (True/False)</option>
+                  <option value="boolean">Boolean</option>
                   <option value="checkbox">Checkbox (Multiple Choice)</option>
                 </select>
               </label>
+              {q.type === "boolean" && (
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name={`boolean-${index}`}
+                      value="true"
+                      checked={q.answer === "true"}
+                      onChange={(e) =>
+                        updateQuestion(index, "answer", e.target.value)
+                      }
+                    />
+                    True
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name={`boolean-${index}`}
+                      value="false"
+                      checked={q.answer === "false"}
+                      onChange={(e) =>
+                        updateQuestion(index, "answer", e.target.value)
+                      }
+                    />
+                    False
+                  </label>
+                </div>
+              )}
             </div>
           </section>
         ))}
