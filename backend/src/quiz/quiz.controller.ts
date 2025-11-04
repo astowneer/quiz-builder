@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dtos/quiz.dto';
@@ -31,5 +32,10 @@ export class QuizController {
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.quizService.getQuizById(id);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return this.quizService.deleteQuiz(id);
   }
 }

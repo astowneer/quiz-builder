@@ -40,4 +40,8 @@ export class QuizService {
       include: { questions: { include: { options: true } } },
     });
   }
+
+  async deleteQuiz(id: number) {
+    return this.prisma.quiz.delete({ where: { id } });
+  }
 }
