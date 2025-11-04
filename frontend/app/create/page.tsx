@@ -75,6 +75,59 @@ export default function CreateQuizPage() {
     setQuestions((prev) => prev.filter((_, i) => i !== index));
   }
 
+  async function handleSubmit(e: React.FormEvent) {
+    console.log(questions);
+    e.preventDefault();
+    const sanitizedQuestions = questions
+      .filter((q) => q.question.trim() !== "")
+      .map((q) => {
+        if (q.type === "checkbox") {
+          return {
+            text: q.question,
+            type: "CHECKBOX",
+            options: q.options
+              ?.filter((opt) => opt.text.trim() !== "") 
+              .map((opt) => ({
+                text: opt.text,
+                isCorrect: !!opt.isCorrect,
+              })),
+          };
+        }
+
+        if (q.type === "boolean") {
+          return {
+            text: q.question,
+            type: "BOOLEAN",
+            answer: q.answer === "true",
+          };
+        }
+
+        return {
+          text: q.question,
+          type: "INPUT",
+          answer: q.answer || "",
+        };
+      });
+
+    try {
+      const res = await fetch("http://localhost:3000/quizzes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: quizTitle,
+          questions: sanitizedQuestions,
+        }),
+      });
+
+      if (res.ok) {
+        setQuizTitle("");
+        setQuestions([{ type: "input", question: "", answer: "" }]);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   return (
     <article className="w-[800px] m-auto space-y-5 py-10">
       <h2 className="text-2xl font-bold mb-5">Create Quiz</h2>
@@ -93,7 +146,7 @@ export default function CreateQuizPage() {
           Quiz Title
         </span>
       </label>
-      <form className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {questions.map((q, index) => (
           <section
             key={index}
