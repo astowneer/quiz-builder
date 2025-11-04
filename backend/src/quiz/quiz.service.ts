@@ -42,6 +42,14 @@ export class QuizService {
   }
 
   async deleteQuiz(id: number) {
+    await this.prisma.option.deleteMany({
+      where: { question: { quizId: id } },
+    });
+
+    await this.prisma.question.deleteMany({
+      where: { quizId: id },
+    });
+
     return this.prisma.quiz.delete({ where: { id } });
   }
 }
