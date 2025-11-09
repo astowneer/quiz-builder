@@ -7,6 +7,10 @@ type QuizGetAllResponseDto = {
   questionCount: number;
 };
 
+type QuizDeleteResponseDto = {
+  id: number;
+};
+
 type Constructor = {
   baseUrl: string;
   http: Http;
@@ -25,9 +29,16 @@ class Quiz {
     this.http = http;
   }
 
-  public getAllQuizzes(): Promise<QuizGetAllResponseDto[]> {
+  public getAll(): Promise<QuizGetAllResponseDto[]> {
     return this.http.load(this.getUrl(), {
       method: HttpMethods.GET,
+      contentType: ContentType.JSON,
+    });
+  }
+
+  public delete(id: number): Promise<QuizDeleteResponseDto> {
+    return this.http.load(this.getUrl(`${id}`), {
+      method: HttpMethods.DELETE,
       contentType: ContentType.JSON,
     });
   }

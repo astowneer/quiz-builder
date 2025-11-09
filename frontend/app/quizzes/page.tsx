@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import QuizItem from "@/components/quiz/QuizItem";
+import { quiz } from "@/services/services";
 
 interface Quiz {
   id: number;
@@ -15,36 +16,23 @@ export default function QuizzesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchQuizzes() {
+    const fetchQuizzes = async () => {
       try {
-        const res = await fetch("http://localhost:3000/quizzes", {
-          cache: "no-store",
-        });
-        const data = await res.json();
-        setQuizzes(data);
+        setQuizzes(await quiz.getAll());
       } catch (error) {
         console.error("Failed to fetch quizzes:", error);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchQuizzes();
   }, []);
 
   async function handleDelete(id: number) {
-    if (!confirm("Are you sure you want to delete this quiz?")) return;
-
     try {
-      const res = await fetch(`http://localhost:3000/quizzes/${id}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        setQuizzes((prev) => prev.filter((quiz) => quiz.id !== id));
-      } else {
-        console.error("Failed to delete quiz");
-      }
+      const res = await quiz.delete(id);
+      if (res.id) setQuizzes((prev) => prev.filter((quiz) => quiz.id !== id));
     } catch (error) {
       console.error("Error deleting quiz:", error);
     }
