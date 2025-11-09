@@ -1,36 +1,6 @@
-import { QuizDto } from "@/components/quiz/libs/types/types";
-import { ApiPath, ContentType, HttpMethods } from "../common/common";
+import { ApiPath, ContentType, HttpMethods } from "../common";
 import type { Http } from "./http.service";
-
-interface QuizGetAllResponseDto {
-  id: number;
-  title: string;
-  questionCount: number;
-};
-
-type QuestionType = "CHECKBOX" | "BOOLEAN" | "INPUT";
-
-interface CheckboxOption {
-  text: string;
-  isCorrect: boolean;
-}
-
-interface QuizQuestion {
-  type: QuestionType;
-  text: string;
-  options?: CheckboxOption[];
-  answer?: string;
-}
-
-interface QuizResponseDto {
-  id: number;
-  title: string;
-  questions: QuizQuestion[];
-}
-
-interface QuizDeleteResponseDto {
-  id: number;
-};
+import { QuizResponseDto,QuizDeleteResponseDto, QuizGetAllResponseDto } from "@/common/types/quiz";
 
 type Constructor = {
   baseUrl: string;
@@ -71,7 +41,7 @@ class Quiz {
     });
   }
 
-  public create(payload: QuizDto): Promise<QuizDto> {
+  public create(payload: QuizResponseDto): Promise<QuizResponseDto> {
     return this.http.load(this.getUrl(), {
       method: HttpMethods.POST,
       contentType: ContentType.JSON,

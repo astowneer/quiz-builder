@@ -1,15 +1,22 @@
-import { QuizOption, QuizQuestion } from "./libs/types/types";
+import {
+  QuizOptionReponseDto,
+  QuizQuestionResponseDto,
+} from "@/common/types/quiz";
 
 interface Props {
-  question: QuizQuestion;
+  question: QuizQuestionResponseDto;
   index: number;
-  onUpdate: (i: number, field: keyof QuizQuestion, value: any) => void;
+  onUpdate: (
+    index: number,
+    field: keyof QuizQuestionResponseDto,
+    value: any
+  ) => void;
 }
 
 export default function QuestionOptions({ question, index, onUpdate }: Props) {
-  const options: QuizOption[] = question.options || [];
+  const options: QuizOptionReponseDto[] = question.options || [];
 
-  const updateOptions = (newOptions: QuizOption[]) =>
+  const updateOptions = (newOptions: QuizOptionReponseDto[]) =>
     onUpdate(index, "options", newOptions);
 
   const addOption = () =>

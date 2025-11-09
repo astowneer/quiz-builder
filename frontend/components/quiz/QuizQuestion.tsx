@@ -4,13 +4,13 @@ import {
   QUESTION_TYPES,
   SELECT_OPTIONS,
 } from "./libs/constants/constants";
-import { QuizQuestion } from "./libs/types/types";
+import { QuizQuestionResponseDto } from "@/common/types/quiz";
 import QuestionOptions from "./QuestionOptions";
 
 interface Props {
   index: number;
-  question: QuizQuestion;
-  onUpdate: (index: number, field: keyof QuizQuestion, value: any) => void;
+  question: QuizQuestionResponseDto;
+  onUpdate: (index: number, field: keyof QuizQuestionResponseDto, value: any) => void;
   onRemove: (index: number) => void;
 }
 

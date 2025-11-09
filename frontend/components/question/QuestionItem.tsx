@@ -2,13 +2,13 @@ import {
   BOOLEAN_OPTIONS,
   QUESTION_TYPES,
 } from "../quiz/libs/constants/constants";
-import { QuizQuestion } from "../quiz/libs/types/types";
+import { QuizQuestionResponseDto } from "@/common/types/quiz";
 
 export function QuestionItem({
   question,
   index,
 }: {
-  question: QuizQuestion;
+  question: QuizQuestionResponseDto;
   index: number;
 }) {
   const renderQuestionContent = () => {

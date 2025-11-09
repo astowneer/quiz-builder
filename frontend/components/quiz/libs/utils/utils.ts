@@ -1,7 +1,7 @@
 import { QUESTION_TYPES } from "../constants/constants";
-import { QuizQuestion } from "../types/types";
+import { QuizQuestionResponseDto } from "@/common/types/quiz";
 
-const sanitizeQuestion = (question: QuizQuestion) => {
+const sanitizeQuestion = (question: QuizQuestionResponseDto) => {
   const text = question.text.trim();
   if (!text) return null;
 
@@ -12,7 +12,7 @@ const sanitizeQuestion = (question: QuizQuestion) => {
         type: QUESTION_TYPES.CHECKBOX,
         options:
           question.options
-            ?.filter((opt) => opt.text.trim())
+            ?.filter((option) => option.text.trim())
             .map(({ text, isCorrect }) => ({ text, isCorrect })) ?? [],
       };
 
@@ -33,14 +33,17 @@ const sanitizeQuestion = (question: QuizQuestion) => {
   }
 };
 
-const sanitizeQuestions = (questions: QuizQuestion[]) => {
-  return questions.reduce((accumulator: QuizQuestion[], question) => {
-    const sanitized = sanitizeQuestion(question);
+const sanitizeQuestions = (questions: QuizQuestionResponseDto[]) => {
+  return questions.reduce(
+    (accumulator: QuizQuestionResponseDto[], question) => {
+      const sanitized = sanitizeQuestion(question);
 
-    if (sanitized) accumulator.push(sanitized);
+      if (sanitized) accumulator.push(sanitized);
 
-    return accumulator;
-  }, []);
+      return accumulator;
+    },
+    []
+  );
 };
 
 export { sanitizeQuestions };

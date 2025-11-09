@@ -2,17 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { QuizDto } from "@/components/quiz/libs/types/types";
 import { QuestionItem } from "@/components/question/QuestionItem";
 import Loading from "@/components/ui/Loading";
 import { quizService } from "@/services/services";
+import { QuizResponseDto } from "@/common/types/quiz";
 
 export default function QuizDetailPage() {
   const params = useParams();
   const id = params?.id;
   const router = useRouter();
 
-  const [quiz, setQuiz] = useState<QuizDto | null>(null);
+  const [quiz, setQuiz] = useState<QuizResponseDto | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

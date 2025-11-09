@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { QuizQuestion } from "./libs/types/types";
 import QuizTitleInput from "./QuizTitleInput";
 import QuizQuestionItem from "./QuizQuestion";
 import { quizService } from "@/services/services";
 import { DEFAULT_QUESTION } from "./libs/constants/constants";
 import { sanitizeQuestions } from "./libs/utils/utils";
+import { QuizQuestionResponseDto } from "@/common/types/quiz";
 
 export function QuizForm() {
   const [quizTitle, setQuizTitle] = useState("");
-  const [questions, setQuestions] = useState<QuizQuestion[]>([
+  const [questions, setQuestions] = useState<QuizQuestionResponseDto[]>([
     DEFAULT_QUESTION,
   ]);
 
@@ -22,7 +22,7 @@ export function QuizForm() {
 
   const handleUpdateQuestion = (
     index: number,
-    field: keyof QuizQuestion,
+    field: keyof QuizQuestionResponseDto,
     value: any
   ) =>
     setQuestions((prev) =>
