@@ -1,55 +1,110 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateQuizDto } from './dtos/quiz.dto';
+import { QuizCreateRequestDto } from './dtos/quiz-create-request.dto';
+import {
+  QuizDeleteResponseDto,
+  QuizGetAllResponseDto,
+  QuizResponseDto,
+} from './dtos/index';
 
 @Injectable()
 export class QuizService {
   constructor(private prisma: PrismaService) {}
 
-  async createQuiz(dto: CreateQuizDto) {
+  async createQuizWithQuestionAndOption(
+    payload: QuizCreateRequestDto,
+  ): Promise<QuizResponseDto> {
     const quiz = await this.prisma.quiz.create({
       data: {
-        title: dto.title,
+        title: payload.title,
         questions: {
-          create: dto.questions.map((q) => ({
-            text: q.text,
-            type: q.type,
-            options: q.options ? { create: q.options } : undefined,
+          create: payload.questions.map((question) => ({
+            text: question.text,
+            type: question.type,
+            options: question.options
+              ? { create: question.options }
+              : undefined,
           })),
         },
       },
       include: { questions: { include: { options: true } } },
     });
 
-    return quiz;
+    return {
+      id: quiz.id,
+      title: quiz.title,
+      questions: quiz.questions.map((question) => ({
+        id: question.id,
+        text: question.text,
+        type: question.type,
+        options: question.options.map((option) => ({
+          id: option.id,
+          text: option.text,
+          isCorrect: option.isCorrect,
+        })),
+      })),
+    };
   }
 
-  async getAllQuizzes() {
-    return this.prisma.quiz.findMany({
+  async getAllQuizzes(): Promise<QuizGetAllResponseDto[]> {
+    const quizzes = await this.prisma.quiz.findMany({
       select: {
         id: true,
         title: true,
         questions: { select: { id: true } },
       },
     });
+
+    return quizzes.map((question) => ({
+      id: question.id,
+      title: question.title,
+      questionCount: question.questions.length,
+    }));
   }
 
-  async getQuizById(id: number) {
-    return this.prisma.quiz.findUnique({
+  async getQuizById(id: number): Promise<QuizResponseDto | null> {
+    const quiz = await this.prisma.quiz.findUnique({
       where: { id },
       include: { questions: { include: { options: true } } },
     });
+
+    if (!quiz) {
+      throw new NotFoundException(`Quiz with ID ${id} not found`);
+    }
+
+    return {
+      id: quiz.id,
+      title: quiz.title,
+      questions: quiz.questions.map((question) => ({
+        id: question.id,
+        text: question.text,
+        type: question.type,
+        options: question.options.map((option) => ({
+          id: option.id,
+          text: option.text,
+          isCorrect: option.isCorrect,
+        })),
+      })),
+    };
   }
 
-  async deleteQuiz(id: number) {
-    await this.prisma.option.deleteMany({
-      where: { question: { quizId: id } },
+  async deleteQuiz(id: number): Promise<QuizDeleteResponseDto> {
+    const deletedQuiz = await this.prisma.$transaction(async (tx) => {
+      await tx.option.deleteMany({
+        where: { question: { quizId: id } },
+      });
+
+      await tx.question.deleteMany({
+        where: { quizId: id },
+      });
+
+      return tx.quiz.delete({
+        where: { id },
+      });
     });
 
-    await this.prisma.question.deleteMany({
-      where: { quizId: id },
-    });
-
-    return this.prisma.quiz.delete({ where: { id } });
+    return {
+      id: deletedQuiz.id,
+    };
   }
 }

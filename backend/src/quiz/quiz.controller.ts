@@ -8,34 +8,40 @@ import {
   Delete,
 } from '@nestjs/common';
 import { QuizService } from './quiz.service';
-import { CreateQuizDto } from './dtos/quiz.dto';
+import { QuizCreateRequestDto } from './dtos/quiz-create-request.dto';
+import {
+  QuizDeleteResponseDto,
+  QuizGetAllResponseDto,
+  QuizResponseDto,
+} from './dtos/index';
 
 @Controller('quizzes')
 export class QuizController {
   constructor(private quizService: QuizService) {}
 
   @Post()
-  async create(@Body() request: CreateQuizDto) {
-    return this.quizService.createQuiz(request);
+  async createQuizWithQuestionAndOption(
+    @Body() request: QuizCreateRequestDto,
+  ): Promise<QuizResponseDto> {
+    return this.quizService.createQuizWithQuestionAndOption(request);
   }
 
   @Get()
-  async findAll() {
-    const quizzes = await this.quizService.getAllQuizzes();
-    return quizzes.map((q) => ({
-      id: q.id,
-      title: q.title,
-      questionCount: q.questions.length,
-    }));
+  async findAll(): Promise<QuizGetAllResponseDto[]> {
+    return await this.quizService.getAllQuizzes();
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<QuizResponseDto | null> {
     return this.quizService.getQuizById(id);
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<QuizDeleteResponseDto> {
     return this.quizService.deleteQuiz(id);
   }
 }
