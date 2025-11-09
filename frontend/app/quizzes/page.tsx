@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import QuizItem from "@/components/quiz/QuizItem";
 import { quiz } from "@/services/services";
+import Loading from "@/components/ui/Loading";
 
 interface Quiz {
   id: number;
@@ -16,39 +17,25 @@ export default function QuizzesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchQuizzes = async () => {
-      try {
-        setQuizzes(await quiz.getAll());
-      } catch (error) {
-        console.error("Failed to fetch quizzes:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchQuizzes();
+    quiz
+      .getAll()
+      .then(setQuizzes)
+      .catch((error) => console.error("Failed to fetch quizzes:", error))
+      .finally(() => setLoading(false));
   }, []);
 
-  async function handleDelete(id: number) {
-    try {
-      const res = await quiz.delete(id);
-      if (res.id) setQuizzes((prev) => prev.filter((quiz) => quiz.id !== id));
-    } catch (error) {
-      console.error("Error deleting quiz:", error);
-    }
-  }
+  const removeQuizFromState = (id: number) => {
+    setQuizzes((prev) => prev.filter((question) => question.id !== id));
+  };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen text-white text-2xl">
-        Loading quizzes...
-      </div>
-    );
-  }
+  const handleDelete = async (id: number) => {
+    quiz
+      .delete(id)
+      .then(() => removeQuizFromState(id))
+      .catch((error) => console.error("Failed to delete quiz:", error));
+  };
 
-  if (quizzes.length === 0) {
-    return <p className="text-center text-white/70">No quizzes available.</p>;
-  }
+  if (loading) <Loading />;
 
   return (
     <article className="max-w-3xl w-full m-auto space-y-8 py-10 text-white">
