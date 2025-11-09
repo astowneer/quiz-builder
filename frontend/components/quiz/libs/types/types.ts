@@ -17,9 +17,15 @@ interface QuizQuestion {
   answer?: string;
 }
 
+interface QuizOption {
+  text: string;
+  isCorrect: boolean;
+}
+
 export {
   type QuestionType,
   type CheckboxOption,
   type QuizQuestion,
   type QuizDto,
+  type QuizOption,
 };

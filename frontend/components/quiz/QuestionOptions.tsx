@@ -1,4 +1,4 @@
-import { QuizQuestion } from "./libs/types/types";
+import { QuizOption, QuizQuestion } from "./libs/types/types";
 
 interface Props {
   question: QuizQuestion;
@@ -7,50 +7,53 @@ interface Props {
 }
 
 export default function QuestionOptions({ question, index, onUpdate }: Props) {
-  const addOption = () => {
-    const opts = question.options || [];
-    onUpdate(index, "options", [...opts, { text: "", isCorrect: false }]);
+  const options: QuizOption[] = question.options || [];
+
+  const updateOptions = (newOptions: QuizOption[]) =>
+    onUpdate(index, "options", newOptions);
+
+  const addOption = () =>
+    updateOptions([...options, { text: "", isCorrect: false }]);
+
+  const removeOption = (index: number) =>
+    updateOptions(options.filter((_, i) => i !== index));
+
+  const updateOptionText = (index: number, text: string) => {
+    const newOptions = options.map((option, i) =>
+      i === index ? { ...option, text } : option
+    );
+    updateOptions(newOptions);
   };
 
-  const removeOption = (optIndex: number) => {
-    const newOpts = question.options?.filter((_, i) => i !== optIndex);
-    onUpdate(index, "options", newOpts);
-  };
-
-  const updateOptionText = (optIndex: number, text: string) => {
-    const newOpts = [...(question.options || [])];
-    newOpts[optIndex].text = text;
-    onUpdate(index, "options", newOpts);
-  };
-
-  const toggleCorrect = (optIndex: number) => {
-    const newOpts = [...(question.options || [])];
-    newOpts[optIndex].isCorrect = !newOpts[optIndex].isCorrect;
-    onUpdate(index, "options", newOpts);
+  const toggleCorrect = (index: number) => {
+    const newOptions = options.map((option, i) =>
+      i === index ? { ...option, isCorrect: !option.isCorrect } : option
+    );
+    updateOptions(newOptions);
   };
 
   return (
     <div className="space-y-2">
-      {question.options?.map((opt, optIndex) => (
-        <div key={optIndex} className="flex gap-2 items-center">
+      {question.options?.map((option, index) => (
+        <div key={index} className="flex gap-2 items-center">
           <input
             type="text"
             className="p-2 rounded-md bg-transparent border-b-4 border-red-900 text-white focus:border-white outline-none flex-1"
             placeholder="Option text"
-            value={opt.text}
-            onChange={(e) => updateOptionText(optIndex, e.target.value)}
+            value={option.text}
+            onChange={(event) => updateOptionText(index, event.target.value)}
           />
           <label className="flex items-center gap-1 text-white/70">
             <input
               type="checkbox"
-              checked={opt.isCorrect}
-              onChange={() => toggleCorrect(optIndex)}
+              checked={option.isCorrect}
+              onChange={() => toggleCorrect(index)}
             />
             Correct
           </label>
           <button
             type="button"
-            onClick={() => removeOption(optIndex)}
+            onClick={() => removeOption(index)}
             className="text-red-900 hover:text-white"
           >
             Remove
