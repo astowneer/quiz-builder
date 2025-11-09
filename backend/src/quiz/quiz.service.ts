@@ -4,7 +4,7 @@ import {
   QuizDeleteResponseDto,
   QuizGetAllResponseDto,
   QuizResponseDto,
-} from './dtos/index';
+} from './dtos';
 import { QuizRepository } from './quiz.repository';
 
 @Injectable()
@@ -16,20 +16,7 @@ export class QuizService {
   ): Promise<QuizResponseDto> {
     const quiz = await this.quizRepository.createQuiz(payload);
 
-    return {
-      id: quiz.id,
-      title: quiz.title,
-      questions: quiz.questions.map((question) => ({
-        id: question.id,
-        text: question.text,
-        type: question.type,
-        options: question.options.map((option) => ({
-          id: option.id,
-          text: option.text,
-          isCorrect: option.isCorrect,
-        })),
-      })),
-    };
+    return quiz.toObjectWithRelations();
   }
 
   async getAllQuizzes(): Promise<QuizGetAllResponseDto[]> {
@@ -49,20 +36,7 @@ export class QuizService {
       throw new NotFoundException(`Quiz with ID ${id} not found`);
     }
 
-    return {
-      id: quiz.id,
-      title: quiz.title,
-      questions: quiz.questions.map((question) => ({
-        id: question.id,
-        text: question.text,
-        type: question.type,
-        options: question.options.map((option) => ({
-          id: option.id,
-          text: option.text,
-          isCorrect: option.isCorrect,
-        })),
-      })),
-    };
+    return quiz.toObjectWithRelations();
   }
 
   async deleteQuiz(id: number): Promise<QuizDeleteResponseDto> {
