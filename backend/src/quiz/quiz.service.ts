@@ -1,34 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
 import { QuizCreateRequestDto } from './dtos/quiz-create-request.dto';
 import {
   QuizDeleteResponseDto,
   QuizGetAllResponseDto,
   QuizResponseDto,
 } from './dtos/index';
+import { QuizRepository } from './quiz.repository';
 
 @Injectable()
 export class QuizService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private quizRepository: QuizRepository) {}
 
   async createQuizWithQuestionAndOption(
     payload: QuizCreateRequestDto,
   ): Promise<QuizResponseDto> {
-    const quiz = await this.prisma.quiz.create({
-      data: {
-        title: payload.title,
-        questions: {
-          create: payload.questions.map((question) => ({
-            text: question.text,
-            type: question.type,
-            options: question.options
-              ? { create: question.options }
-              : undefined,
-          })),
-        },
-      },
-      include: { questions: { include: { options: true } } },
-    });
+    const quiz = await this.quizRepository.createQuiz(payload);
 
     return {
       id: quiz.id,
@@ -47,13 +33,7 @@ export class QuizService {
   }
 
   async getAllQuizzes(): Promise<QuizGetAllResponseDto[]> {
-    const quizzes = await this.prisma.quiz.findMany({
-      select: {
-        id: true,
-        title: true,
-        questions: { select: { id: true } },
-      },
-    });
+    const quizzes = await this.quizRepository.findAllQuizzes();
 
     return quizzes.map((question) => ({
       id: question.id,
@@ -63,10 +43,7 @@ export class QuizService {
   }
 
   async getQuizById(id: number): Promise<QuizResponseDto | null> {
-    const quiz = await this.prisma.quiz.findUnique({
-      where: { id },
-      include: { questions: { include: { options: true } } },
-    });
+    const quiz = await this.quizRepository.findQuizById(id);
 
     if (!quiz) {
       throw new NotFoundException(`Quiz with ID ${id} not found`);
@@ -89,19 +66,7 @@ export class QuizService {
   }
 
   async deleteQuiz(id: number): Promise<QuizDeleteResponseDto> {
-    const deletedQuiz = await this.prisma.$transaction(async (tx) => {
-      await tx.option.deleteMany({
-        where: { question: { quizId: id } },
-      });
-
-      await tx.question.deleteMany({
-        where: { quizId: id },
-      });
-
-      return tx.quiz.delete({
-        where: { id },
-      });
-    });
+    const deletedQuiz = await this.quizRepository.deleteQuiz(id);
 
     return {
       id: deletedQuiz.id,
