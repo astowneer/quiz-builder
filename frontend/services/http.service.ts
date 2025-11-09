@@ -3,7 +3,7 @@ import {
   HttpHeader,
   HttpMethods,
   type ValueOf,
-} from "../common/common";
+} from "../common";
 
 type HttpOptions = {
   method: ValueOf<typeof HttpMethods>;

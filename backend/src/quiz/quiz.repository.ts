@@ -15,6 +15,7 @@ export class QuizRepository {
           create: entity.questions.map((question) => ({
             text: question.text,
             type: question.type,
+            answer: question.answer,
             options: question.options
               ? { create: question.options }
               : undefined,

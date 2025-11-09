@@ -13,7 +13,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen w-full flex flex-col justify-center text-white bg-red-500">{children}</body>
+      <body className="min-h-screen w-full flex flex-col justify-center text-white bg-red-500">
+        {children}
+      </body>
     </html>
   );
 }

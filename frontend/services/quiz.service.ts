@@ -1,15 +1,6 @@
-import { ApiPath, ContentType, HttpMethods } from "../common/common";
+import { ApiPath, ContentType, HttpMethods } from "../common";
 import type { Http } from "./http.service";
-
-type QuizGetAllResponseDto = {
-  id: number;
-  title: string;
-  questionCount: number;
-};
-
-type QuizDeleteResponseDto = {
-  id: number;
-};
+import { QuizResponseDto,QuizDeleteResponseDto, QuizGetAllResponseDto } from "@/common/types/quiz";
 
 type Constructor = {
   baseUrl: string;
@@ -36,10 +27,25 @@ class Quiz {
     });
   }
 
+  public getOne(id: number): Promise<QuizResponseDto> {
+    return this.http.load(this.getUrl(`${id}`), {
+      method: HttpMethods.GET,
+      contentType: ContentType.JSON,
+    });
+  }
+
   public delete(id: number): Promise<QuizDeleteResponseDto> {
     return this.http.load(this.getUrl(`${id}`), {
       method: HttpMethods.DELETE,
       contentType: ContentType.JSON,
+    });
+  }
+
+  public create(payload: QuizResponseDto): Promise<QuizResponseDto> {
+    return this.http.load(this.getUrl(), {
+      method: HttpMethods.POST,
+      contentType: ContentType.JSON,
+      payload: JSON.stringify(payload),
     });
   }
 

@@ -25,4 +25,12 @@ export class QuizQuestionRequestDto {
   @IsArray()
   @IsOptional()
   options?: QuizOptionRequestDto[];
+
+  @ApiProperty({
+    description: 'Question answer',
+    example: 'true',
+  })
+  @IsString()
+  @IsOptional()
+  answer?: string;
 }

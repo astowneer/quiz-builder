@@ -1,68 +1,73 @@
-import { QuestionType, QuizQuestion } from "./types/types";
+import {
+  BOOLEAN_OPTIONS,
+  FIELDS,
+  QUESTION_TYPES,
+  SELECT_OPTIONS,
+} from "./libs/constants/constants";
+import { QuizOptionReponseDto, QuizQuestionResponseDto } from "@/common/types/quiz";
 import QuestionOptions from "./QuestionOptions";
 
 interface Props {
   index: number;
-  question: QuizQuestion;
-  updateQuestion: (i: number, field: keyof QuizQuestion, value: any) => void;
-  removeQuestion: (i: number) => void;
+  question: QuizQuestionResponseDto;
+  onUpdate: (
+    index: number,
+    field: keyof QuizQuestionResponseDto,
+    value: string | QuizOptionReponseDto[]
+  ) => void;
+  onRemove: (index: number) => void;
 }
 
 export default function QuizQuestionItem({
   index,
   question,
-  updateQuestion,
-  removeQuestion,
+  onUpdate,
+  onRemove,
 }: Props) {
   const renderQuestionInput = () => {
     switch (question.type) {
-      case "boolean":
+      case QUESTION_TYPES.BOOLEAN:
         return (
           <div className="flex gap-4">
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name={`boolean-${index}`}
-                value="true"
-                checked={question.answer === "true"}
-                onChange={(e) =>
-                  updateQuestion(index, "answer", e.target.value)
-                }
-              />
-              True
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name={`boolean-${index}`}
-                value="false"
-                checked={question.answer === "false"}
-                onChange={(e) =>
-                  updateQuestion(index, "answer", e.target.value)
-                }
-              />
-              False
-            </label>
+            {BOOLEAN_OPTIONS.map(({ label, value }) => (
+              <label key={value} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name={`boolean-${index}`}
+                  value={value}
+                  checked={question.answer === value}
+                  onChange={(event) =>
+                    onUpdate(index, FIELDS.ANSWER, event.target.value)
+                  }
+                />
+                {label}
+              </label>
+            ))}
           </div>
         );
-      case "input":
+
+      case QUESTION_TYPES.INPUT:
         return (
           <input
             type="text"
             className="w-full p-2 rounded-md bg-transparent border-b-4 border-red-900 text-white focus:border-white outline-none"
             placeholder="Answer"
-            value={question.answer || ""}
-            onChange={(e) => updateQuestion(index, "answer", e.target.value)}
+            value={question.answer}
+            onChange={(event) =>
+              onUpdate(index, FIELDS.ANSWER, event.target.value)
+            }
           />
         );
-      case "checkbox":
+
+      case QUESTION_TYPES.CHECKBOX:
         return (
           <QuestionOptions
             question={question}
-            updateQuestion={updateQuestion}
+            onUpdate={onUpdate}
             index={index}
           />
         );
+
       default:
         return null;
     }
@@ -72,7 +77,7 @@ export default function QuizQuestionItem({
     <section className="bg-red-700 rounded-xl shadow-xl p-5 space-y-3">
       <div className="flex justify-between text-white/70 border-b border-red-900 pb-2 mb-2">
         <div>Question {index + 1}</div>
-        <button type="button" onClick={() => removeQuestion(index)}>
+        <button type="button" onClick={() => onRemove(index)}>
           Remove
         </button>
       </div>
@@ -82,8 +87,10 @@ export default function QuizQuestionItem({
           <input
             type="text"
             className="w-full p-2 rounded-md bg-transparent border-b-4 border-red-900 text-white focus:border-white outline-none"
-            value={question.question}
-            onChange={(e) => updateQuestion(index, "question", e.target.value)}
+            value={question.text}
+            onChange={(event) =>
+              onUpdate(index, FIELDS.TEXT, event.target.value)
+            }
           />
         </label>
         <label className="block">
@@ -91,13 +98,15 @@ export default function QuizQuestionItem({
           <select
             className="w-full p-2 rounded-md bg-transparent border-b-4 border-red-900 text-white focus:border-white outline-none"
             value={question.type}
-            onChange={(e) =>
-              updateQuestion(index, "type", e.target.value as QuestionType)
+            onChange={(event) =>
+              onUpdate(index, FIELDS.TYPE, event.target.value)
             }
           >
-            <option value="input">Input</option>
-            <option value="boolean">Boolean</option>
-            <option value="checkbox">Checkbox (Multiple Choice)</option>
+            {SELECT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </label>
         {renderQuestionInput()}
