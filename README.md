@@ -108,6 +108,39 @@ Backend Swagger Docs: http://localhost:3000/api (if Swagger is enabled)
 3. `GET /quizzes/:id` – Return full details of a quiz including all questions
 4. `DELETE /quizzes/:id` – Delete a quiz
 
+## Database Schema
+```mermaid
+erDiagram
+  Quiz ||--o{ Question : "question"
+  Quiz {
+    int id PK
+    varchar title
+    dateTime createdAt
+    dateTime updatedAt
+  }
+
+  Question ||--o{ Option : "option"
+  Question {
+    int id PK
+    int quizId FK
+    varchar text
+    QuestionType type
+    varchar answer
+  }
+
+  Option {
+    int id PK
+    int questionId FK
+    varchar text
+    boolean isCorrect
+  }
+
+  QuestionType {
+    BOOLEAN BOOLEAN
+    INPUT INPUT
+    CHECKBOX CHECKBOX
+  }
+```
 ---
 
 ## **Frontend**
