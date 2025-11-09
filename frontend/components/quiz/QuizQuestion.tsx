@@ -1,11 +1,17 @@
-import { QuestionType, QuizQuestion } from "./libs/types/types";
+import {
+  BOOLEAN_OPTIONS,
+  FIELDS,
+  QUESTION_TYPES,
+  SELECT_OPTIONS,
+} from "./libs/constants/constants";
+import { QuizQuestion } from "./libs/types/types";
 import QuestionOptions from "./QuestionOptions";
 
 interface Props {
   index: number;
   question: QuizQuestion;
-  onUpdate: (i: number, field: keyof QuizQuestion, value: any) => void;
-  onRemove: (i: number) => void;
+  onUpdate: (index: number, field: keyof QuizQuestion, value: any) => void;
+  onRemove: (index: number) => void;
 }
 
 export default function QuizQuestionItem({
@@ -16,46 +22,40 @@ export default function QuizQuestionItem({
 }: Props) {
   const renderQuestionInput = () => {
     switch (question.type) {
-      case "BOOLEAN":
+      case QUESTION_TYPES.BOOLEAN:
         return (
           <div className="flex gap-4">
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name={`boolean-${index}`}
-                value="true"
-                checked={question.answer === "true"}
-                onChange={(e) =>
-                  onUpdate(index, "answer", e.target.value)
-                }
-              />
-              True
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name={`boolean-${index}`}
-                value="false"
-                checked={question.answer === "false"}
-                onChange={(e) =>
-                  onUpdate(index, "answer", e.target.value)
-                }
-              />
-              False
-            </label>
+            {BOOLEAN_OPTIONS.map(({ label, value }) => (
+              <label key={value} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name={`boolean-${index}`}
+                  value={value}
+                  checked={question.answer === value}
+                  onChange={(event) =>
+                    onUpdate(index, FIELDS.ANSWER, event.target.value)
+                  }
+                />
+                {label}
+              </label>
+            ))}
           </div>
         );
-      case "INPUT":
+
+      case QUESTION_TYPES.INPUT:
         return (
           <input
             type="text"
             className="w-full p-2 rounded-md bg-transparent border-b-4 border-red-900 text-white focus:border-white outline-none"
             placeholder="Answer"
-            value={question.answer || ""}
-            onChange={(e) => onUpdate(index, "answer", e.target.value)}
+            value={question.answer}
+            onChange={(event) =>
+              onUpdate(index, FIELDS.ANSWER, event.target.value)
+            }
           />
         );
-      case "CHECKBOX":
+
+      case QUESTION_TYPES.CHECKBOX:
         return (
           <QuestionOptions
             question={question}
@@ -63,6 +63,7 @@ export default function QuizQuestionItem({
             index={index}
           />
         );
+
       default:
         return null;
     }
@@ -83,7 +84,9 @@ export default function QuizQuestionItem({
             type="text"
             className="w-full p-2 rounded-md bg-transparent border-b-4 border-red-900 text-white focus:border-white outline-none"
             value={question.text}
-            onChange={(e) => onUpdate(index, "text", e.target.value)}
+            onChange={(event) =>
+              onUpdate(index, FIELDS.TEXT, event.target.value)
+            }
           />
         </label>
         <label className="block">
@@ -91,13 +94,15 @@ export default function QuizQuestionItem({
           <select
             className="w-full p-2 rounded-md bg-transparent border-b-4 border-red-900 text-white focus:border-white outline-none"
             value={question.type}
-            onChange={(e) =>
-              onUpdate(index, "type", e.target.value as QuestionType)
+            onChange={(event) =>
+              onUpdate(index, FIELDS.TYPE, event.target.value)
             }
           >
-            <option value="INPUT">Input</option>
-            <option value="BOOLEAN">Boolean</option>
-            <option value="CHECKBOX">Multiple Choice</option>
+            {SELECT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </label>
         {renderQuestionInput()}
