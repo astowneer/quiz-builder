@@ -1,3 +1,4 @@
+import { QuizDto } from "@/components/quiz/types/types";
 import { ApiPath, ContentType, HttpMethods } from "../common/common";
 import type { Http } from "./http.service";
 
@@ -40,6 +41,14 @@ class Quiz {
     return this.http.load(this.getUrl(`${id}`), {
       method: HttpMethods.DELETE,
       contentType: ContentType.JSON,
+    });
+  }
+
+  public create(payload: QuizDto): Promise<QuizDto> {
+    return this.http.load(this.getUrl(), {
+      method: HttpMethods.POST,
+      contentType: ContentType.JSON,
+      payload: JSON.stringify(payload)
     });
   }
 

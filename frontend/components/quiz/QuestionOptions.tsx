@@ -3,30 +3,30 @@ import { QuizQuestion } from "./types/types";
 interface Props {
   question: QuizQuestion;
   index: number;
-  updateQuestion: (i: number, field: keyof QuizQuestion, value: any) => void;
+  onUpdate: (i: number, field: keyof QuizQuestion, value: any) => void;
 }
 
-export default function QuestionOptions({ question, index, updateQuestion }: Props) {
+export default function QuestionOptions({ question, index, onUpdate }: Props) {
   const addOption = () => {
     const opts = question.options || [];
-    updateQuestion(index, "options", [...opts, { text: "", isCorrect: false }]);
+    onUpdate(index, "options", [...opts, { text: "", isCorrect: false }]);
   };
 
   const removeOption = (optIndex: number) => {
     const newOpts = question.options?.filter((_, i) => i !== optIndex);
-    updateQuestion(index, "options", newOpts);
+    onUpdate(index, "options", newOpts);
   };
 
   const updateOptionText = (optIndex: number, text: string) => {
     const newOpts = [...(question.options || [])];
     newOpts[optIndex].text = text;
-    updateQuestion(index, "options", newOpts);
+    onUpdate(index, "options", newOpts);
   };
 
   const toggleCorrect = (optIndex: number) => {
     const newOpts = [...(question.options || [])];
     newOpts[optIndex].isCorrect = !newOpts[optIndex].isCorrect;
-    updateQuestion(index, "options", newOpts);
+    onUpdate(index, "options", newOpts);
   };
 
   return (

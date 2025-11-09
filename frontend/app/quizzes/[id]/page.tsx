@@ -4,20 +4,20 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   QuestionType,
-  Quiz,
+  QuizDto,
   QuizQuestion,
 } from "@/components/quiz/types/types";
 import { QuestionItem } from "@/components/question/QuestionItem";
 
 function mapBackendQuestion(q: any): QuizQuestion {
   const typeMap: Record<string, QuestionType> = {
-    BOOLEAN: "boolean",
-    INPUT: "input",
-    CHECKBOX: "checkbox",
+    BOOLEAN: "BOOLEAN",
+    INPUT: "INPUT",
+    CHECKBOX: "CHECKBOX",
   };
 
   return {
-    question: q.text,
+    text: q.text,
     type: typeMap[q.type] || "input",
     options: q.options?.map((o: any) => ({
       text: o.text,
@@ -27,9 +27,8 @@ function mapBackendQuestion(q: any): QuizQuestion {
   };
 }
 
-function mapBackendQuiz(qz: any): Quiz {
+function mapBackendQuiz(qz: any): QuizDto {
   return {
-    id: qz.id,
     title: qz.title,
     questions: qz.questions.map(mapBackendQuestion),
   };
@@ -39,7 +38,7 @@ export default function QuizDetailPage() {
   const { id } = useParams();
   const router = useRouter();
 
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [quiz, setQuiz] = useState<QuizDto | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import { QuizQuestion } from "../quiz/types/types";
 
 export function QuestionContent({ question }: { question: QuizQuestion }) {
   switch (question.type) {
-    case "boolean":
+    case "BOOLEAN":
       return (
         <div className="flex gap-6 text-white/80">
           <label className="flex items-center gap-2">
@@ -15,7 +15,7 @@ export function QuestionContent({ question }: { question: QuizQuestion }) {
           </label>
         </div>
       );
-    case "input":
+    case "INPUT":
       return (
         <input
           type="text"
@@ -24,7 +24,7 @@ export function QuestionContent({ question }: { question: QuizQuestion }) {
           className="w-full p-2 rounded-md bg-transparent border-b-4 border-red-900 text-white outline-none"
         />
       );
-    case "checkbox":
+    case "CHECKBOX":
       return (
         <div className="space-y-2">
           {question.options?.map((opt, j) => (

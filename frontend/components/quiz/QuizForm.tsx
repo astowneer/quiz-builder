@@ -4,76 +4,98 @@ import { useState } from "react";
 import { QuizQuestion } from "./types/types";
 import QuizTitleInput from "./QuizTitleInput";
 import QuizQuestionItem from "./QuizQuestion";
+import { quiz } from "@/services/services";
 
-export default function QuizForm() {
+export function QuizForm() {
   const [quizTitle, setQuizTitle] = useState("");
   const [questions, setQuestions] = useState<QuizQuestion[]>([
-    { type: "input", question: "", answer: "" },
+    { type: "INPUT", text: "", answer: "" },
   ]);
 
-  const addQuestion = () =>
-    setQuestions((prev) => [...prev, { type: "input", question: "", answer: "" }]);
+  const handleAddQuestion = () =>
+    setQuestions((prev) => [
+      ...prev,
+      { type: "INPUT", text: "", answer: "" },
+    ]);
 
-  const removeQuestion = (index: number) =>
+  const handleRemoveQuestion = (index: number) =>
     setQuestions((prev) => prev.filter((_, i) => i !== index));
 
-  const updateQuestion = (index: number, field: keyof QuizQuestion, value: any) =>
+  const handleUpdateQuestion = (
+    index: number,
+    field: keyof QuizQuestion,
+    value: any
+  ) =>
     setQuestions((prev) =>
-      prev.map((q, i) => (i === index ? { ...q, [field]: value } : q))
+      prev.map((question, i) =>
+        i === index ? { ...question, [field]: value } : question
+      )
     );
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const typeMap: Record<string, string> = {
+      CHECKBOX: "CHECKBOX",
+      BOOLEAN: "BOOLEAN",
+      INPUT: "INPUT",
+    };
 
     const sanitized = questions
-      .filter((q) => q.question.trim())
-      .map((q) => {
-        if (q.type === "checkbox") {
-          return {
-            text: q.question,
-            type: "CHECKBOX",
-            options: q.options
-              ?.filter((opt) => opt.text.trim())
-              .map((opt) => ({ text: opt.text, isCorrect: opt.isCorrect })),
-          };
+      .filter((question) => question.text.trim())
+      .map((question) => {
+        const type = typeMap[question.type];
+        const base = { text: question.text, type };
+
+        switch (type) {
+          case "CHECKBOX":
+            return {
+              text: question.text,
+              type: "CHECKBOX" as const,
+              options:
+                question.options
+                  ?.filter((option) => option.text.trim())
+                  .map(({ text, isCorrect }) => ({ text, isCorrect })) ?? [],
+            };
+          case "BOOLEAN":
+            return {
+              text: question.text,
+              type: "BOOLEAN" as const,
+              answer: question.answer || "false",
+            };
+          case "INPUT":
+          default:
+            return {
+              text: question.text,
+              type: "INPUT" as const,
+              answer: question.answer || "",
+            };
         }
-        if (q.type === "boolean") {
-          return {
-            text: q.question,
-            type: "BOOLEAN",
-            answer: q.answer === "true",
-          };
-        }
-        return { text: q.question, type: "INPUT", answer: q.answer || "" };
       });
 
-    await fetch("http://localhost:3000/quizzes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: quizTitle, questions: sanitized }),
-    });
+    quiz.create({ title: quizTitle, questions: sanitized });
 
     setQuizTitle("");
-    setQuestions([{ type: "input", question: "", answer: "" }]);
-  }
+    setQuestions([{ type: "INPUT", text: "", answer: "" }]);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <QuizTitleInput value={quizTitle} onChange={setQuizTitle} />
-      {questions.map((q, index) => (
+      {questions.map((question, index) => (
         <QuizQuestionItem
           key={index}
           index={index}
-          question={q}
-          updateQuestion={updateQuestion}
-          removeQuestion={removeQuestion}
+          question={question}
+          onUpdate={handleUpdateQuestion}
+          onRemove={handleRemoveQuestion}
         />
       ))}
       <div className="flex justify-center mt-5">
         <button
           type="button"
-          onClick={addQuestion}
-          className="uppercase border-b-4 font-bold text-red-900 hover:text-white leading-8 border-red-900 hover:border-white transition-colors duration-500 ease-in px-5 py-2 rounded-xl"
+          onClick={handleAddQuestion}
+          className="uppercase border-b-4 font-bold text-red-900 hover:text-white leading-8 border-red-900 hover:border-white transition-colors duration-300 ease-in px-5 py-2 rounded-xl"
         >
           Add Question
         </button>
