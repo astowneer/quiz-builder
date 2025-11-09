@@ -23,19 +23,3 @@ export {
   type QuizQuestion,
   type QuizDto,
 };
-
-//options
-//      text: string;
-//         isCorrect: boolean;
-//     }[];
-//     text: string;
-//     type: string;
-// } | {
-//     answer: boolean;
-//     text: string;
-//     type: string;
-// } | {
-//     answer: string | true;
-//     text: string;
-//     type: string;
-// })[]

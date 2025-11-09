@@ -1,4 +1,4 @@
-import { QuizQuestion } from "./types/types";
+import { QuizQuestion } from "./libs/types/types";
 
 interface Props {
   question: QuizQuestion;

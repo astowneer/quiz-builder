@@ -1,4 +1,4 @@
-import { QuizQuestion } from "../quiz/types/types";
+import { QuizQuestion } from "../quiz/libs/types/types";
 
 export function QuestionContent({ question }: { question: QuizQuestion }) {
   switch (question.type) {

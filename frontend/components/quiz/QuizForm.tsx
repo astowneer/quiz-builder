@@ -1,22 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { QuizQuestion } from "./types/types";
+import { QuizQuestion } from "./libs/types/types";
 import QuizTitleInput from "./QuizTitleInput";
 import QuizQuestionItem from "./QuizQuestion";
 import { quiz } from "@/services/services";
+import { DEFAULT_QUESTION } from "./libs/constants/constants";
+import { sanitizeQuestions } from "./libs/utils/utils";
 
 export function QuizForm() {
   const [quizTitle, setQuizTitle] = useState("");
   const [questions, setQuestions] = useState<QuizQuestion[]>([
-    { type: "INPUT", text: "", answer: "" },
+    DEFAULT_QUESTION,
   ]);
 
   const handleAddQuestion = () =>
-    setQuestions((prev) => [
-      ...prev,
-      { type: "INPUT", text: "", answer: "" },
-    ]);
+    setQuestions((prev) => [...prev, { ...DEFAULT_QUESTION }]);
 
   const handleRemoveQuestion = (index: number) =>
     setQuestions((prev) => prev.filter((_, i) => i !== index));
@@ -35,48 +34,16 @@ export function QuizForm() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const typeMap: Record<string, string> = {
-      CHECKBOX: "CHECKBOX",
-      BOOLEAN: "BOOLEAN",
-      INPUT: "INPUT",
-    };
+    const sanitized = sanitizeQuestions(questions);
+    if (!quizTitle.trim() || !sanitized.length) return;
 
-    const sanitized = questions
-      .filter((question) => question.text.trim())
-      .map((question) => {
-        const type = typeMap[question.type];
-        const base = { text: question.text, type };
-
-        switch (type) {
-          case "CHECKBOX":
-            return {
-              text: question.text,
-              type: "CHECKBOX" as const,
-              options:
-                question.options
-                  ?.filter((option) => option.text.trim())
-                  .map(({ text, isCorrect }) => ({ text, isCorrect })) ?? [],
-            };
-          case "BOOLEAN":
-            return {
-              text: question.text,
-              type: "BOOLEAN" as const,
-              answer: question.answer || "false",
-            };
-          case "INPUT":
-          default:
-            return {
-              text: question.text,
-              type: "INPUT" as const,
-              answer: question.answer || "",
-            };
-        }
-      });
-
-    quiz.create({ title: quizTitle, questions: sanitized });
-
-    setQuizTitle("");
-    setQuestions([{ type: "INPUT", text: "", answer: "" }]);
+    try {
+      await quiz.create({ title: quizTitle, questions: sanitized });
+      setQuizTitle("");
+      setQuestions([{ ...DEFAULT_QUESTION }]);
+    } catch (err) {
+      console.error("Failed to create quiz:", err);
+    }
   };
 
   return (

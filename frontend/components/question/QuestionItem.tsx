@@ -1,4 +1,4 @@
-import { QuizQuestion } from "../quiz/types/types";
+import { QuizQuestion } from "../quiz/libs/types/types";
 import { QuestionContent } from "./QuestionContent";
 
 export function QuestionItem({
@@ -14,7 +14,7 @@ export function QuestionItem({
         <div>Question {index + 1}</div>
         <div className="text-sm italic">{question.type}</div>
       </div>
-      <p className="font-semibold">{question.question}</p>
+      <p className="font-semibold">{question.text}</p>
       <QuestionContent question={question} />
     </section>
   );

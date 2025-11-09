@@ -1,4 +1,4 @@
-import { QuestionType, QuizQuestion } from "./types/types";
+import { QuestionType, QuizQuestion } from "./libs/types/types";
 import QuestionOptions from "./QuestionOptions";
 
 interface Props {

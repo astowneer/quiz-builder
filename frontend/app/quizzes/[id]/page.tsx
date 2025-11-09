@@ -6,7 +6,7 @@ import {
   QuestionType,
   QuizDto,
   QuizQuestion,
-} from "@/components/quiz/types/types";
+} from "@/components/quiz/libs/types/types";
 import { QuestionItem } from "@/components/question/QuestionItem";
 
 function mapBackendQuestion(q: any): QuizQuestion {

@@ -1,4 +1,4 @@
-import { QuizDto } from "@/components/quiz/types/types";
+import { QuizDto } from "@/components/quiz/libs/types/types";
 import { ApiPath, ContentType, HttpMethods } from "../common/common";
 import type { Http } from "./http.service";
 
