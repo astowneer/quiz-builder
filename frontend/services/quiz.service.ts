@@ -2,13 +2,33 @@ import { QuizDto } from "@/components/quiz/libs/types/types";
 import { ApiPath, ContentType, HttpMethods } from "../common/common";
 import type { Http } from "./http.service";
 
-type QuizGetAllResponseDto = {
+interface QuizGetAllResponseDto {
   id: number;
   title: string;
   questionCount: number;
 };
 
-type QuizDeleteResponseDto = {
+type QuestionType = "CHECKBOX" | "BOOLEAN" | "INPUT";
+
+interface CheckboxOption {
+  text: string;
+  isCorrect: boolean;
+}
+
+interface QuizQuestion {
+  type: QuestionType;
+  text: string;
+  options?: CheckboxOption[];
+  answer?: string;
+}
+
+interface QuizResponseDto {
+  id: number;
+  title: string;
+  questions: QuizQuestion[];
+}
+
+interface QuizDeleteResponseDto {
   id: number;
 };
 
@@ -37,6 +57,13 @@ class Quiz {
     });
   }
 
+  public getOne(id: number): Promise<QuizResponseDto> {
+    return this.http.load(this.getUrl(`${id}`), {
+      method: HttpMethods.GET,
+      contentType: ContentType.JSON,
+    });
+  }
+
   public delete(id: number): Promise<QuizDeleteResponseDto> {
     return this.http.load(this.getUrl(`${id}`), {
       method: HttpMethods.DELETE,
@@ -48,7 +75,7 @@ class Quiz {
     return this.http.load(this.getUrl(), {
       method: HttpMethods.POST,
       contentType: ContentType.JSON,
-      payload: JSON.stringify(payload)
+      payload: JSON.stringify(payload),
     });
   }
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import QuizItem from "@/components/quiz/QuizItem";
-import { quiz } from "@/services/services";
+import { quizService } from "@/services/services";
 import Loading from "@/components/ui/Loading";
 
 interface Quiz {
@@ -17,7 +17,7 @@ export default function QuizzesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    quiz
+    quizService
       .getAll()
       .then(setQuizzes)
       .catch((error) => console.error("Failed to fetch quizzes:", error))
@@ -29,7 +29,7 @@ export default function QuizzesPage() {
   };
 
   const handleDelete = async (id: number) => {
-    quiz
+    quizService
       .delete(id)
       .then(() => removeQuizFromState(id))
       .catch((error) => console.error("Failed to delete quiz:", error));

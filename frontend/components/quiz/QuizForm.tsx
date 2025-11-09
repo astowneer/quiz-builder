@@ -4,7 +4,7 @@ import { useState } from "react";
 import { QuizQuestion } from "./libs/types/types";
 import QuizTitleInput from "./QuizTitleInput";
 import QuizQuestionItem from "./QuizQuestion";
-import { quiz } from "@/services/services";
+import { quizService } from "@/services/services";
 import { DEFAULT_QUESTION } from "./libs/constants/constants";
 import { sanitizeQuestions } from "./libs/utils/utils";
 
@@ -38,7 +38,7 @@ export function QuizForm() {
     if (!quizTitle.trim() || !sanitized.length) return;
 
     try {
-      await quiz.create({ title: quizTitle, questions: sanitized });
+      await quizService.create({ title: quizTitle, questions: sanitized });
       setQuizTitle("");
       setQuestions([{ ...DEFAULT_QUESTION }]);
     } catch (err) {

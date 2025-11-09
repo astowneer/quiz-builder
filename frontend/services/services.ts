@@ -3,9 +3,9 @@ import { Http } from "./http.service";
 
 const http = new Http();
 
-const quiz = new Quiz({
+const quizService = new Quiz({
   baseUrl: 'http://localhost:3000',
   http,
 });
 
-export { quiz };
+export { quizService };

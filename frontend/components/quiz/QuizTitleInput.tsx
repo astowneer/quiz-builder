@@ -1,6 +1,6 @@
 interface Props {
   value: string;
-  onChange: (v: string) => void;
+  onChange: (value: string) => void;
 }
 
 export default function QuizTitleInput({ value, onChange }: Props) {
@@ -13,7 +13,7 @@ export default function QuizTitleInput({ value, onChange }: Props) {
         type="text"
         placeholder="Quiz title"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(event) => onChange(event.target.value)}
       />
     </label>
   );

@@ -2,68 +2,39 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {
-  QuestionType,
-  QuizDto,
-  QuizQuestion,
-} from "@/components/quiz/libs/types/types";
+import { QuizDto } from "@/components/quiz/libs/types/types";
 import { QuestionItem } from "@/components/question/QuestionItem";
-
-function mapBackendQuestion(q: any): QuizQuestion {
-  const typeMap: Record<string, QuestionType> = {
-    BOOLEAN: "BOOLEAN",
-    INPUT: "INPUT",
-    CHECKBOX: "CHECKBOX",
-  };
-
-  return {
-    text: q.text,
-    type: typeMap[q.type] || "input",
-    options: q.options?.map((o: any) => ({
-      text: o.text,
-      isCorrect: !!o.isCorrect,
-    })),
-    answer: q.answer ?? undefined,
-  };
-}
-
-function mapBackendQuiz(qz: any): QuizDto {
-  return {
-    title: qz.title,
-    questions: qz.questions.map(mapBackendQuestion),
-  };
-}
+import Loading from "@/components/ui/Loading";
+import { quizService } from "@/services/services";
 
 export default function QuizDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id;
   const router = useRouter();
 
   const [quiz, setQuiz] = useState<QuizDto | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchQuiz = async () => {
-      try {
-        const res = await fetch(`http://localhost:3000/quizzes/${id}`);
-        if (!res.ok) throw new Error("Failed to fetch quiz");
-        const data = await res.json();
-        setQuiz(mapBackendQuiz(data));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchQuiz();
+    const numericId = Number(id);
+    if (isNaN(numericId)) {
+      console.error("Invalid quiz id:", id);
+      setLoading(false);
+      return;
+    }
+
+    quizService
+      .getOne(Number(id))
+      .then(setQuiz)
+      .catch((error) => console.error("Failed to fetch quiz:", error))
+      .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <div className="text-white">Loading...</div>;
+  if (loading) return <Loading />;
   if (!quiz) return <div className="text-white">Quiz not found.</div>;
-  if (quiz.questions.length === 0)
-    return <div className="text-white/60">No questions in this quiz yet.</div>;
 
   return (
-    <main className="max-w-2xl mx-auto mt-10 text-white space-y-6">
+    <main className="max-w-3xl w-full mx-auto mt-10 text-white space-y-6 px-5">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">{quiz.title}</h1>
         <button
@@ -73,8 +44,8 @@ export default function QuizDetailPage() {
           ← Back
         </button>
       </div>
-      {quiz.questions.map((q, i) => (
-        <QuestionItem key={i} question={q} index={i} />
+      {quiz.questions.map((question, index) => (
+        <QuestionItem key={index} question={question} index={index} />
       ))}
     </main>
   );
