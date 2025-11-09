@@ -19,7 +19,7 @@ export default function QuizDetailPage() {
     const numericId = Number(id);
     if (isNaN(numericId)) {
       console.error("Invalid quiz id:", id);
-      setLoading(false);
+      queueMicrotask(() => setLoading(false));
       return;
     }
 

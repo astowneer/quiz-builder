@@ -6,7 +6,7 @@ import QuizQuestionItem from "./QuizQuestion";
 import { quizService } from "@/services/services";
 import { DEFAULT_QUESTION } from "./libs/constants/constants";
 import { sanitizeQuestions } from "./libs/utils/utils";
-import { QuizQuestionResponseDto } from "@/common/types/quiz";
+import { QuizOptionReponseDto, QuizQuestionResponseDto } from "@/common/types/quiz";
 
 export function QuizForm() {
   const [quizTitle, setQuizTitle] = useState("");
@@ -23,7 +23,7 @@ export function QuizForm() {
   const handleUpdateQuestion = (
     index: number,
     field: keyof QuizQuestionResponseDto,
-    value: any
+    value?: string | QuizOptionReponseDto[]
   ) =>
     setQuestions((prev) =>
       prev.map((question, i) =>

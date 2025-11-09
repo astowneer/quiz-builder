@@ -9,7 +9,7 @@ interface Props {
   onUpdate: (
     index: number,
     field: keyof QuizQuestionResponseDto,
-    value: any
+    value: QuizOptionReponseDto[]
   ) => void;
 }
 
