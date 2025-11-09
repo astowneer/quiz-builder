@@ -54,6 +54,7 @@ class QuizEntity {
         id: question.id,
         text: question.text,
         type: question.type,
+        answer: question.answer ?? undefined,
         options: question.options.map((option) => ({
           id: option.id,
           text: option.text,

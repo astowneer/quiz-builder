@@ -28,6 +28,7 @@ model Question {
   text     String
   type     QuestionType
   options  Option[]
+  answer   String? 
 }
 
 model Option {

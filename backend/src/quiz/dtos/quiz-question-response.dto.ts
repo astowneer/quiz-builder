@@ -17,4 +17,10 @@ export class QuizQuestionResponseDto {
     description: 'Question options',
   })
   options: QuizOptionResponseDto[];
+
+  @ApiProperty({
+    description: 'Question answer',
+    example: 'true',
+  })
+  answer?: string | null;
 }
